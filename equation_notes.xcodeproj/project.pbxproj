@@ -14,6 +14,9 @@
 		EF2CC7C82DA83AF8009E6DD2 /* equation_notesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF2CC7C72DA83AF8009E6DD2 /* equation_notesTests.swift */; };
 		EF2CC7D22DA83AF8009E6DD2 /* equation_notesUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF2CC7D12DA83AF8009E6DD2 /* equation_notesUITests.swift */; };
 		EF2CC7D42DA83AF8009E6DD2 /* equation_notesUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF2CC7D32DA83AF8009E6DD2 /* equation_notesUITestsLaunchTests.swift */; };
+		EF2CC7E12DA84A04009E6DD2 /* OCR.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF2CC7E02DA84A04009E6DD2 /* OCR.swift */; };
+		EF2CC7E32DA84A50009E6DD2 /* DrawView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF2CC7E22DA84A50009E6DD2 /* DrawView.swift */; };
+		EF2CC7E62DA84B08009E6DD2 /* LaTeXSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = EF2CC7E52DA84B08009E6DD2 /* LaTeXSwiftUI */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,6 +47,8 @@
 		EF2CC7CD2DA83AF8009E6DD2 /* equation_notesUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = equation_notesUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EF2CC7D12DA83AF8009E6DD2 /* equation_notesUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = equation_notesUITests.swift; sourceTree = "<group>"; };
 		EF2CC7D32DA83AF8009E6DD2 /* equation_notesUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = equation_notesUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		EF2CC7E02DA84A04009E6DD2 /* OCR.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OCR.swift; sourceTree = "<group>"; };
+		EF2CC7E22DA84A50009E6DD2 /* DrawView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,6 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EF2CC7E62DA84B08009E6DD2 /* LaTeXSwiftUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -96,6 +102,8 @@
 			children = (
 				EF2CC7B62DA83AF4009E6DD2 /* equation_notesApp.swift */,
 				EF2CC7B82DA83AF4009E6DD2 /* ContentView.swift */,
+				EF2CC7E02DA84A04009E6DD2 /* OCR.swift */,
+				EF2CC7E22DA84A50009E6DD2 /* DrawView.swift */,
 				EF2CC7BA2DA83AF8009E6DD2 /* Assets.xcassets */,
 				EF2CC7BC2DA83AF8009E6DD2 /* Preview Content */,
 			);
@@ -143,6 +151,9 @@
 			dependencies = (
 			);
 			name = equation_notes;
+			packageProductDependencies = (
+				EF2CC7E52DA84B08009E6DD2 /* LaTeXSwiftUI */,
+			);
 			productName = equation_notes;
 			productReference = EF2CC7B32DA83AF4009E6DD2 /* equation_notes.app */;
 			productType = "com.apple.product-type.application";
@@ -215,6 +226,9 @@
 				Base,
 			);
 			mainGroup = EF2CC7AA2DA83AF4009E6DD2;
+			packageReferences = (
+				EF2CC7E42DA84B08009E6DD2 /* XCRemoteSwiftPackageReference "LaTeXSwiftUI" */,
+			);
 			productRefGroup = EF2CC7B42DA83AF4009E6DD2 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -257,7 +271,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EF2CC7E12DA84A04009E6DD2 /* OCR.swift in Sources */,
 				EF2CC7B92DA83AF4009E6DD2 /* ContentView.swift in Sources */,
+				EF2CC7E32DA84A50009E6DD2 /* DrawView.swift in Sources */,
 				EF2CC7B72DA83AF4009E6DD2 /* equation_notesApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -588,6 +604,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		EF2CC7E42DA84B08009E6DD2 /* XCRemoteSwiftPackageReference "LaTeXSwiftUI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/colinc86/LaTeXSwiftUI";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		EF2CC7E52DA84B08009E6DD2 /* LaTeXSwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EF2CC7E42DA84B08009E6DD2 /* XCRemoteSwiftPackageReference "LaTeXSwiftUI" */;
+			productName = LaTeXSwiftUI;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = EF2CC7AB2DA83AF4009E6DD2 /* Project object */;
 }
