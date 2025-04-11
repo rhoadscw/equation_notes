@@ -6,84 +6,59 @@
 //
 
 import SwiftUI
-import LaTeXSwiftUI
+import SwiftData
 
-enum TextType: Codable{
-    case equation
-    case description
-}
-
-struct TextArea : Codable, Hashable, Identifiable {
-    var id = UUID()
-    var type: TextType
-    var body: String
-}
-
+//This is the main screen for the notes app. Where users select individual notes and
+//can create new ones
 struct ContentView: View {
     
-    @State var title = "Sample"
-    @State var description = ""
-    //@State var noEquations = 0
-    @State var sections = [TextArea]()
-    @State private var showingSheet = false
+    @Environment(\.modelContext) var modelContext
+    @Query var notes: [Note]
     
     var body: some View {
         NavigationStack{
             List{
-                //TextField("Title", text: $title)
-                
-                TextEditor(text: $description)
-                    .frame(minHeight: 50)
-                
-                ForEach($sections){ $section in
-                    
-                    if section.type == .description {
-                        TextEditor(text: $section.body)
+                ForEach(notes){note in
+                    NavigationLink(value: note){
+                        Text(note.title)
                     }
-                    else{
-                        TextEditor(text: $section.body)
-                        LaTeX(section.body)
-                            .font(.title)
-                    }
-                    
-                        
-                
                 }
-                .onDelete(perform: removeSection)
+                .onDelete(perform: deleteNotes)
             }
-            .navigationTitle($title) //editable title
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationTitle("Notes")
+            .navigationDestination(for: Note.self){ note in
+                NoteView(note: note)
+            }
             .toolbar{
-                Button("New eqn"){
-                    //need the double slash. Shows up and single slash
-                    //addEqn(symbol: "$\\Pi$" )
-                    showingSheet.toggle()
+                ToolbarItem(placement: .topBarLeading) {
+                    EditButton()
                 }
-                .sheet(isPresented: $showingSheet){
-                    DrawView(sections: $sections)
+                ToolbarItem(placement: .topBarTrailing){
+                    Button("add", systemImage: "plus"){
+                        let emptyNote = Note(title: "", sections: [TextArea]())
+                        modelContext.insert(emptyNote)
+                        
+                    }
                 }
-                Button("body"){
-                    addBody()
-                }
-                
             }
         }
-        
-    }
-    func addBody(){
-        let newSection = TextArea(type: TextType.description, body: "")
-        sections.append(newSection)
-    }
-    func addEqn(symbol: String){
-        let newSection = TextArea(type: TextType.equation, body: symbol)
-        sections.append(newSection)
     }
     
-    func removeSection(at offsets: IndexSet) {
-        sections.remove(atOffsets: offsets)
+    //deletes selected notes
+    func deleteNotes( at indices: IndexSet){
+        for index in indices{
+            
+            //find note by its index
+            let note = notes[index]
+            
+            //remove note from storage
+            modelContext.delete(note)
+        }
     }
+
 }
 
 #Preview {
     ContentView()
+        .modelContainer(for: Note.self)
 }
