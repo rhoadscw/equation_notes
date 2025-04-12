@@ -13,30 +13,30 @@ import SwiftData
 struct ContentView: View {
     
     @Environment(\.modelContext) var modelContext
-    @Query var notes: [Note]
+    @Query(sort:\Note.dateCreated, order: .reverse) var notes: [Note]
     
     var body: some View {
         NavigationStack{
             List{
                 ForEach(notes){note in
-                    NavigationLink(value: note){
+                    NavigationLink(destination: NoteView(note: note)){
                         Text(note.title)
                     }
                 }
                 .onDelete(perform: deleteNotes)
             }
             .navigationTitle("Notes")
-            .navigationDestination(for: Note.self){ note in
-                NoteView(note: note)
-            }
             .toolbar{
+                
                 ToolbarItem(placement: .topBarLeading) {
                     EditButton()
                 }
+                
                 ToolbarItem(placement: .topBarTrailing){
                     Button("add", systemImage: "plus"){
-                        let emptyNote = Note(title: "", sections: [TextArea]())
+                        let emptyNote = Note(title: "Title", sections: [TextArea](), dateCreated: Date.now)
                         modelContext.insert(emptyNote)
+                        //NoteView(note: notes[0])
                         
                     }
                 }
@@ -60,5 +60,6 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
-        .modelContainer(for: Note.self)
+        //.modelContainer(for: Note.self, inMemory: true) //cleans memory after each use
+        .modelContainer(for:Note.self)
 }

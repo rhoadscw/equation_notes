@@ -16,6 +16,8 @@ struct NoteView: View {
     //@State var description = ""
     //@State var noEquations = 0
     @Bindable var note: Note
+    //@State var note: Note
+    //@State var note = Note(title: "sample", sections: [TextArea]())
     //@State var sections = [TextArea]()
     @State private var showingSheet = false
     
