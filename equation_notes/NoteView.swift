@@ -29,15 +29,20 @@ struct NoteView: View {
                 TextEditor(text: $description)
                     .frame(minHeight: 50)
                 */
+                //Section being identifiable allows this
                 ForEach($note.sections){ $section in
                     
                     if section.type == .description {
                         TextEditor(text: $section.body)
                     }
                     else{
-                        TextEditor(text: $section.body)
-                        LaTeX(section.body)
-                            .font(.title)
+                        /*
+                        NavigationLink(destination: EquationView(equation: $section)){
+                            LaTeX(section.body)
+                                .font(.title)
+                        }
+                        */
+                        
                     }
                     
                         

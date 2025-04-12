@@ -14,6 +14,6 @@ struct equation_notesApp: App {
         WindowGroup {
             ContentView()
         }
-        .modelContainer(for: Note.self)
+        .modelContainer(for: [Note.self, TextArea.self])
     }
 }

@@ -60,6 +60,6 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
-        //.modelContainer(for: Note.self, inMemory: true) //cleans memory after each use
-        .modelContainer(for:Note.self)
+        .modelContainer(for: [Note.self, TextArea.self], inMemory: true) //cleans memory after each use
+        //.modelContainer(for:Note.self)
 }

@@ -8,15 +8,23 @@
 import Foundation
 import SwiftData
 
+
 enum TextType: Codable{
     case equation
     case description
 }
 
-struct TextArea : Codable, Hashable, Identifiable {
+@Model
+class TextArea : Hashable, Identifiable {
     var id = UUID()
     var type: TextType
     var body: String
+    
+    init(id: UUID = UUID(), type: TextType, body: String) {
+        self.id = id
+        self.type = type
+        self.body = body
+    }
 }
 
 @Model

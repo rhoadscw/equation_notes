@@ -33,18 +33,11 @@ struct DrawView: View {
                         let point = value.location
                         currLine.points.append(point)
                         drawing.showLines.append(currLine)
-                        //print(point)
+                        
                     })
                     .onEnded({ value in
                         drawing.lines.append(currLine)
                         print(drawing.lines.count)
-                        //print(currLine.points.count)
-                        //print (currLine.points)
-                        //print(drawing.isHorizontalLine(line: currLine))
-                        //print(drawing.cornerCount(line: currLine))
-                        //print("sigma: \(drawing.sigma(currLine))")
-                        //print("integral: \(drawing.integral(currLine))")
-                        //print("pi: \(drawing.capPi())")
                         currLine = Line(points: [])
                         
                     })
