@@ -56,7 +56,7 @@ class Drawing{
         
         
         //verify there are 3 lines
-        print(lines.count)
+        //print(lines.count)
         if (!(lines.count == 3)){
             return false
         }
@@ -314,14 +314,14 @@ class Drawing{
         
         if (lines.count == 1){
             if sigma(lines[0]){
-                return "$\\Sigma$"
+                return " \\Sigma "
             }
             if integral(lines[0]){
-                return "$\\int$"
+                return " \\int "
             }
         }
         
-        if (capPi()) {return "$\\Pi$"}
+        if (capPi()) {return " \\Pi "}
         
         print("no matches")
         
@@ -329,5 +329,6 @@ class Drawing{
     }
     
 }
+
 
 

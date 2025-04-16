@@ -20,6 +20,7 @@
 		EF2CC7E82DA84CAA009E6DD2 /* NoteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF2CC7E72DA84CAA009E6DD2 /* NoteView.swift */; };
 		EF2CC7EA2DA84E46009E6DD2 /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF2CC7E92DA84E46009E6DD2 /* Note.swift */; };
 		EF2CC7EC2DAAF648009E6DD2 /* EquationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF2CC7EB2DAAF648009E6DD2 /* EquationView.swift */; };
+		EF33E82C2DAB174900F7C9FC /* TextArea.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF33E82B2DAB174900F7C9FC /* TextArea.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,6 +56,7 @@
 		EF2CC7E72DA84CAA009E6DD2 /* NoteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteView.swift; sourceTree = "<group>"; };
 		EF2CC7E92DA84E46009E6DD2 /* Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Note.swift; sourceTree = "<group>"; };
 		EF2CC7EB2DAAF648009E6DD2 /* EquationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EquationView.swift; sourceTree = "<group>"; };
+		EF33E82B2DAB174900F7C9FC /* TextArea.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextArea.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,6 +111,7 @@
 				EF2CC7B62DA83AF4009E6DD2 /* equation_notesApp.swift */,
 				EF2CC7B82DA83AF4009E6DD2 /* ContentView.swift */,
 				EF2CC7E92DA84E46009E6DD2 /* Note.swift */,
+				EF33E82B2DAB174900F7C9FC /* TextArea.swift */,
 				EF2CC7E72DA84CAA009E6DD2 /* NoteView.swift */,
 				EF2CC7EB2DAAF648009E6DD2 /* EquationView.swift */,
 				EF2CC7E02DA84A04009E6DD2 /* OCR.swift */,
@@ -287,6 +290,7 @@
 				EF2CC7E32DA84A50009E6DD2 /* DrawView.swift in Sources */,
 				EF2CC7B72DA83AF4009E6DD2 /* equation_notesApp.swift in Sources */,
 				EF2CC7EA2DA84E46009E6DD2 /* Note.swift in Sources */,
+				EF33E82C2DAB174900F7C9FC /* TextArea.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

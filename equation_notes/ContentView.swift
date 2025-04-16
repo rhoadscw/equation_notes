@@ -16,6 +16,7 @@ struct ContentView: View {
     @Query(sort:\Note.dateCreated, order: .reverse) var notes: [Note]
     
     var body: some View {
+        
         NavigationStack{
             List{
                 ForEach(notes){note in
@@ -34,7 +35,7 @@ struct ContentView: View {
                 
                 ToolbarItem(placement: .topBarTrailing){
                     Button("add", systemImage: "plus"){
-                        let emptyNote = Note(title: "Title", sections: [TextArea](), dateCreated: Date.now)
+                        let emptyNote = Note(title: "Title", dateCreated: Date.now)
                         modelContext.insert(emptyNote)
                         //NoteView(note: notes[0])
                         
@@ -55,11 +56,10 @@ struct ContentView: View {
             modelContext.delete(note)
         }
     }
-
 }
 
 #Preview {
     ContentView()
-        .modelContainer(for: [Note.self, TextArea.self], inMemory: true) //cleans memory after each use
+        .modelContainer(for: Note.self, inMemory: true) //cleans memory after each use
         //.modelContainer(for:Note.self)
 }

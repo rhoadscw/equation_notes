@@ -9,16 +9,9 @@ import SwiftUI
 import LaTeXSwiftUI
 
 struct NoteView: View {
-    
-    //@Environment(\.modelContext) var modelContext
-    
-    //@State var title = "Sample"
-    //@State var description = ""
-    //@State var noEquations = 0
+
     @Bindable var note: Note
-    //@State var note: Note
-    //@State var note = Note(title: "sample", sections: [TextArea]())
-    //@State var sections = [TextArea]()
+
     @State private var showingSheet = false
     
     var body: some View {
@@ -32,21 +25,19 @@ struct NoteView: View {
                 //Section being identifiable allows this
                 ForEach($note.sections){ $section in
                     
-                    if section.type == .description {
+                    if section.type == 0 {
                         TextEditor(text: $section.body)
                     }
                     else{
-                        /*
-                        NavigationLink(destination: EquationView(equation: $section)){
+                        //TextEditor(text: $section.body)
+                      
+                        NavigationLink(destination: EquationView(equation: section)){
                             LaTeX(section.body)
                                 .font(.title)
+                                .renderingStyle(.wait)
                         }
-                        */
-                        
+                     
                     }
-                    
-                        
-                
                 }
                 .onDelete(perform: removeSection)
             }
@@ -54,12 +45,8 @@ struct NoteView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar{
                 Button("New eqn"){
-                    //need the double slash. Shows up and single slash
-                    //addEqn(symbol: "$\\Pi$" )
-                    showingSheet.toggle()
-                }
-                .sheet(isPresented: $showingSheet){
-                    DrawView(sections: $note.sections)
+                    addEqn()
+                    //showingSheet.toggle()
                 }
                 Button("body"){
                     addBody()
@@ -70,11 +57,11 @@ struct NoteView: View {
         
     }
     func addBody(){
-        let newSection = TextArea(type: TextType.description, body: "")
+        let newSection = TextArea(type: 0, body: "")
         note.sections.append(newSection)
     }
-    func addEqn(symbol: String){
-        let newSection = TextArea(type: TextType.equation, body: symbol)
+    func addEqn(){
+        let newSection = TextArea(type: 1, body: "$ $")
         note.sections.append(newSection)
     }
     
