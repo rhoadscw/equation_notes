@@ -22,10 +22,12 @@ class TextArea: Identifiable, Hashable {
     
     var type: Int //0 or 1, indicating if text is an equation or not
     var body: String
+    var sortOrder: Int
     
-    init(id: UUID = UUID(), type: Int, body: String) {
+    init(id: UUID = UUID(), type: Int, body: String, sortOrder: Int) {
         self.id = id
         self.type = type
         self.body = body
+        self.sortOrder = sortOrder
     }
 }

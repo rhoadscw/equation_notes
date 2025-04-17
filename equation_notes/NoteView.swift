@@ -12,7 +12,7 @@ struct NoteView: View {
 
     @Bindable var note: Note
 
-    @State private var showingSheet = false
+    //@State private var showingSheet = false
     
     var body: some View {
         NavigationStack{
@@ -23,7 +23,7 @@ struct NoteView: View {
                     .frame(minHeight: 50)
                 */
                 //Section being identifiable allows this
-                ForEach($note.sections){ $section in
+                ForEach($note.sections.sorted(by: { $0.wrappedValue.sortOrder < $1.wrappedValue.sortOrder })){ $section in
                     
                     if section.type == 0 {
                         TextEditor(text: $section.body)
@@ -40,6 +40,16 @@ struct NoteView: View {
                     }
                 }
                 .onDelete(perform: removeSection)
+                .onMove{ indexSet, destination in
+                    note.sections.move(fromOffsets: indexSet, toOffset: destination)
+                    
+                    var sortCounter = 0
+                    for section in note.sections{
+                        section.sortOrder = sortCounter
+                        sortCounter += 1
+                        print("counter is: \(sortCounter)")
+                    }
+                }
             }
             .navigationTitle($note.title) //editable title
             .navigationBarTitleDisplayMode(.inline)
@@ -51,17 +61,20 @@ struct NoteView: View {
                 Button("body"){
                     addBody()
                 }
+                EditButton()
                 
             }
         }
         
     }
+    
+    
     func addBody(){
-        let newSection = TextArea(type: 0, body: "")
+        let newSection = TextArea(type: 0, body: "", sortOrder: note.sections.count)
         note.sections.append(newSection)
     }
     func addEqn(){
-        let newSection = TextArea(type: 1, body: "$ $")
+        let newSection = TextArea(type: 1, body: "$ $", sortOrder: note.sections.count)
         note.sections.append(newSection)
     }
     
