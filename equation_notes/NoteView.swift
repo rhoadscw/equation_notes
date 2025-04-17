@@ -7,10 +7,12 @@
 
 import SwiftUI
 import LaTeXSwiftUI
+import PhotosUI
 
 struct NoteView: View {
 
     @Bindable var note: Note
+    @State var selectedImage: PhotosPickerItem?
 
     //@State private var showingSheet = false
     
@@ -28,7 +30,7 @@ struct NoteView: View {
                     if section.type == 0 {
                         TextEditor(text: $section.body)
                     }
-                    else{
+                    else if section.type == 1{
                         //TextEditor(text: $section.body)
                       
                         NavigationLink(destination: EquationView(equation: section)){
@@ -37,6 +39,14 @@ struct NoteView: View {
                                 .renderingStyle(.wait)
                         }
                      
+                    }
+                    else{
+                        if let imageData = section.image,
+                           let presentedImage = UIImage(data: imageData){
+                               Image(uiImage: presentedImage)
+                                .resizable()
+                                .scaledToFit()
+                           }
                     }
                 }
                 .onDelete(perform: removeSection)
@@ -54,20 +64,37 @@ struct NoteView: View {
             .navigationTitle($note.title) //editable title
             .navigationBarTitleDisplayMode(.inline)
             .toolbar{
-                Button("New eqn"){
+                
+                Button("eqn"){
                     addEqn()
                     //showingSheet.toggle()
                 }
-                Button("body"){
+                Button("text"){
                     addBody()
                 }
                 EditButton()
                 
+                
+                PhotosPicker(selection: $selectedImage, matching: .images){
+                    Label("select an image", systemImage: "photo")
+                }
+                
+                
+                
+            }
+            .task(id: selectedImage){
+                if let image = try? await selectedImage?.loadTransferable(type: Data.self){
+                    addPhoto(data: image)
+                }
             }
         }
         
     }
-    
+    func addPhoto(data: Data){
+        let newSection = TextArea(type: 2, body: "", sortOrder: note.sections.count)
+        newSection.image = data
+        note.sections.append(newSection)
+    }
     
     func addBody(){
         let newSection = TextArea(type: 0, body: "", sortOrder: note.sections.count)

@@ -23,6 +23,7 @@ class TextArea: Identifiable, Hashable {
     var type: Int //0 or 1, indicating if text is an equation or not
     var body: String
     var sortOrder: Int
+    var image: Data?
     
     init(id: UUID = UUID(), type: Int, body: String, sortOrder: Int) {
         self.id = id
