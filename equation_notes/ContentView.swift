@@ -18,13 +18,22 @@ struct ContentView: View {
     var body: some View {
         
         NavigationStack{
-            List{
-                ForEach(notes){note in
-                    NavigationLink(destination: NoteView(note: note)){
-                        Text(note.title)
+            ZStack{
+                List{
+                    ForEach(notes){note in
+                        NavigationLink(destination: NoteView(note: note)){
+                            Text(note.title)
+                        }
                     }
+                    .onDelete(perform: deleteNotes)
                 }
-                .onDelete(perform: deleteNotes)
+                VStack{
+                    Spacer()
+                    NavigationLink(destination: HelpView()){
+                        Text("Help")
+                    }
+                    
+                }
             }
             .navigationTitle("Notes")
             .toolbar{
