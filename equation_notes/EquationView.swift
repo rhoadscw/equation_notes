@@ -11,8 +11,6 @@ import SwiftData
 
 struct RenderedView: View{
     
-    //@Environment(\.dismiss) var dismiss
-    
     var equation: String
     
     var body: some View{

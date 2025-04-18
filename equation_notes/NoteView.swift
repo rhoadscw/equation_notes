@@ -72,15 +72,10 @@ struct NoteView: View {
                 Button("text"){
                     addBody()
                 }
-                EditButton()
-                
-                
                 PhotosPicker(selection: $selectedImage, matching: .images){
                     Label("select an image", systemImage: "photo")
                 }
-                
-                
-                
+                EditButton()
             }
             .task(id: selectedImage){
                 if let image = try? await selectedImage?.loadTransferable(type: Data.self){
@@ -88,7 +83,6 @@ struct NoteView: View {
                 }
             }
         }
-        
     }
     func addPhoto(data: Data){
         let newSection = TextArea(type: 2, body: "", sortOrder: note.sections.count)

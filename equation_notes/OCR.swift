@@ -10,8 +10,6 @@ import SwiftUI
 
 struct Line{
     var points = [CGPoint]()
-    var width = 5.0
-    var colour: Color = .black
 }
 
 @Observable
@@ -310,22 +308,22 @@ class Drawing{
         return corners
     }
     
-    func identify() -> String{
+    func identify() -> (String, String){
         
         if (lines.count == 1){
             if sigma(lines[0]){
-                return " \\Sigma "
+                return (" \\Sigma ", "Σ")
             }
             if integral(lines[0]){
-                return " \\int "
+                return (" \\int ", "∫")
             }
         }
         
-        if (capPi()) {return " \\Pi "}
+        if (capPi()) {return (" \\Pi ", "Π")}
         
         print("no matches")
         
-        return ""
+        return ("", "")
     }
     
 }

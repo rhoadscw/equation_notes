@@ -6,14 +6,18 @@
 //
 
 import SwiftUI
+import LaTeXSwiftUI
 
 struct DrawView: View {
     
     @State var drawing = Drawing()
     @State private var currLine = Line()
-    //@Binding var sections: [TextArea]
     @Binding var equation: String
-    @State var test = " "
+    let lineWidth = 7.0
+    
+    @State private var identificationFailAlert = false
+    @State private var identificationSuccessAlert = false
+    @State private var identifiedSymbol = ("", "")
     
     @Environment(\.dismiss) var dismiss
     
@@ -26,7 +30,7 @@ struct DrawView: View {
                     for line in drawing.showLines{
                         var path = Path()
                         path.addLines(line.points)
-                        context.stroke(path, with: .color(line.colour), lineWidth: line.width)
+                        context.stroke(path, with: .color(.black), lineWidth: lineWidth)
                     }
                     
                 }
@@ -51,8 +55,38 @@ struct DrawView: View {
                     clear()
                 }
                 Button("identify"){
-                    addSymbol(symbol: drawing.identify())
+                    
+                    identifiedSymbol = drawing.identify()
+                    if identifiedSymbol.0 != "" {
+                        //addSymbol(symbol: drawing.identify())
+                        identificationSuccessAlert.toggle()
+                        //dismiss()
+                    }
+                    else{
+                        identificationFailAlert.toggle()
+                    }
                     //print("Result: \(drawing.identify())")
+                    //dismiss()
+                }
+            }
+            .alert("Success", isPresented: $identificationSuccessAlert){
+                Button("Accept", role: .cancel){
+                    addSymbol(symbol: identifiedSymbol.0)
+                    dismiss()
+                }
+                Button("Cancel", role: .destructive){
+                    clear()
+                }
+            } message:{
+                HStack{
+                    Text("Shape identified as: \(identifiedSymbol.1)")
+                }
+            }
+            .alert("Unable to identify drawing", isPresented: $identificationFailAlert){
+                Button("Retry", role: .destructive){
+                    clear()
+                }
+                Button("Ok", role: .cancel){
                     dismiss()
                 }
             }
@@ -65,18 +99,15 @@ struct DrawView: View {
     }
     
     func addSymbol(symbol: String){
-        //let newSection = TextArea(type: 1, body: symbol)
+        
         var insertOffset = equation.count - 1
         var dollarTracker = 0
         
-        //let targetOffset = equation.count - (insertOffset - 1)
         while (insertOffset >= 0){
             
             print("round \(insertOffset)")
             print("sum = \(equation.count + insertOffset)")
             let targetIndex = equation.index(equation.startIndex, offsetBy: insertOffset)
-            //print(targetIndex)
-            //print(equation[targetIndex])
             
             print(equation[targetIndex])
             if equation[targetIndex] == "$"{
@@ -98,13 +129,9 @@ struct DrawView: View {
         //correction so symbol is inserted after previous character
         if (equation.count > 0) {insertOffset += 1}
         
-        //var insertIndex = equation.count - 1
         print("got to the end and offset is \(insertOffset)")
         equation.insert(contentsOf: symbol, at: equation.index(equation.startIndex, offsetBy: insertOffset))
-        //equation.append(symbol)
-        //test.insert(contentsOf: symbol, at: test.endIndex)
     }
-    
 }
  
 /*
