@@ -8,15 +8,10 @@
 import Foundation
 import SwiftData
 
-//this used to be codable
-/*
-enum TextType{
-    case equation
-    case description
-}
-*/
 @Model
 class TextArea: Identifiable, Hashable {
+    
+    //Notes are made up of an array or TextAreas. They contain text or an image and indicate how they should be presented
     
     var id = UUID()
     

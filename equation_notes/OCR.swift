@@ -12,35 +12,32 @@ struct Line{
     var points = [CGPoint]()
 }
 
+//Class encapsulating a user's symbol drawing, along with actions that can be performed on the drawing, mainly OCR
 @Observable
 class Drawing{
     
-    //will need to request users draw big sigma in one stroke, pi in 3 strokes
-    
+    //Array of continuous lines the user draws
     var lines = [Line]()
     
     //showLines are what is displayed to user. Allows line to be drawn to screen real time without generating many unnecessary lines in the main array
     var showLines = [Line]()
     
+    
     func addLine( line: Line){
         lines.append(line)
     }
     
-    //should add scaling so that images are approx comparable to each other
-    
+    //decides if a line is horizontal
     func isHorizontalLine(line: Line)-> Bool{
         
-        //using 30 as maximum amount any point can deviate from
+        //using 30 as maximum amount any point can deviate from, vertically
         for point in line.points{
             if ((point.y - line.points[0].y).magnitude > 30) {return false}
         }
         return true
-        
-        //may need further work to make sure
-        
-        //perhaps vertical distance from start can be allowed to increase more with greater horizontal distance from the start
     }
     
+    //decides if a line is vertical
     func isVerticalLine(line: Line)-> Bool{
         
         for point in line.points{
@@ -50,20 +47,17 @@ class Drawing{
         
     }
     
+    //decides if the user has drawn a capital pi
     func capPi() -> Bool{
         
-        
-        //verify there are 3 lines
-        //print(lines.count)
+        //verify user has drawn 3 lines total
         if (!(lines.count == 3)){
             return false
         }
-        //print("yep, there's 3 lines")
         
         var topLine = lines[0]
         
-        
-        //isolate horizontal line
+        //isolate horizontal line (from top of Pi) and set it as topLine
         for i in 0..<3{
             if isHorizontalLine(line: lines[i]){
                 topLine = lines[i]
@@ -72,16 +66,17 @@ class Drawing{
             }
         }
         
-        //var topLineLen = topLine.points[0].x - topLine.points[topLine.points.count].x
-        
-        //confirm that one line was removed
+        //confirm that one line (topLine) was removed, so two lines remain, which are expected to be vertical
         if (!(lines.count == 2)){
             return false
         }
         
-        //confirm remaining two lines are approx vertical
+        //confirm remaining two lines are as expected
         for i in 0..<2{
+            
             var maxYPoint = lines[i].points[0]
+            
+            //confirm line is vertical
             if !isVerticalLine(line: lines[i]){
                 return false
             }
@@ -91,6 +86,7 @@ class Drawing{
                     maxYPoint = maxYPoint.y < point.y ? maxYPoint : point
                 }
                 
+                //Make sure the top of the vertical line is near the horizontal line
                 if ((maxYPoint.y - topLine.points[topLine.points.count - 1].y).magnitude > 20) { return false}
                 
                 //make sure vertical bars are in the region horizontally of the top bar
@@ -99,9 +95,8 @@ class Drawing{
                 
             }
         }
-            
         
-        
+        //if none of the fail conditions have been met, shape is assumed to conform to a Pi
         
         return true
     }
@@ -114,50 +109,51 @@ class Drawing{
         
     }
     
-    
+    //determines if the shape is an integration symbol
     func integral( _ initial_line: Line)-> Bool{
         
         var line = initial_line
+        var finalSuccess = true
         
-        //integral should consist of only one line
-        
-        //all i'm really doing here is getting the stem length atm. Will need to conjure up some other tricks
-        
-        //if less than 20 points total, we will get index errors
+        //if less than 20 points total, we will get index errors. This shouldn't be a problem, but we include this condition
+        //to prevent crashes
         
         if (line.points.count < 20) {return false}
         
-        var ydiff = line.points[10].y - line.points[0].y
-        var ydir = ydiff / ydiff.magnitude
-        var xdiff = line.points[line.points.count - 1].x - line.points[0].x
-        var xdir = xdiff / xdiff.magnitude
+        //var ydiff = line.points[10].y - line.points[0].y
+        //var ydir = ydiff / ydiff.magnitude
+        //var xdiff = line.points[line.points.count - 1].x - line.points[0].x
+        //var xdir = xdiff / xdiff.magnitude
         
         //assume drawn from top down
-        //if integral was drawn left to right, reverse its order
-        if (xdir > 0){
-            //reverse order of line array
+        //if integral was drawn down up, reverse its order
+        if (line.points[line.points.count - 1].y - line.points[0].y < 0){
+            print("reverse")
             line.points.reverse()
         }
         
-        ydiff = line.points[10].y - line.points[0].y
-        ydir = ydiff / ydiff.magnitude
-        xdiff = line.points[line.points.count - 1].x - line.points[0].x
-        xdir = xdiff / xdiff.magnitude
+        //ydiff refers to to the difference in x or y between one point and another later point in the points array
+        //ydir captures the direction of change: -1, 1 or 0
+        
+        let ydiff = line.points[10].y - line.points[0].y
+        var ydir = ydiff / ydiff.magnitude
+        //var xdiff = line.points[line.points.count - 1].x - line.points[0].x
+        //var xdir = xdiff / xdiff.magnitude
         
         var ystart = 0
         var yEnd: Int
         
-        //first find bit before it goes down and isolate point where downward movement starts:
+        //first find bit before it goes down (the hook at the top) and isolate point where downward movement starts:
         
         if (ydir < 0){
             
             //if y direction starts negative, find point it starts going positive
-            
+            //looking at each 10th point helps isolate real change and improve runtime.
             for i in 1..<(line.points.count/10){
                 let new_ydiff = line.points[10*i].y - line.points[10*(i-1)].y
                 let new_ydir = new_ydiff != 0 ? new_ydiff / new_ydiff.magnitude : ydir //use previous direction if there isn't any movement in the current set of points.
                 
-                
+                //when change in vertical direction is found, set this point as ystart
                 if ((new_ydir - ydir).magnitude > 1 ){
                     ystart = i*10
                     
@@ -173,7 +169,6 @@ class Drawing{
             
             if (grad < -2){
                 //set ystart to point it starts heading down rapidly
-                //
                 ystart = i*10
                 
                 break
@@ -182,41 +177,36 @@ class Drawing{
         yEnd = ystart //this could be temporary. Here to gurantee yEnd is initialized
         
         //measure how long the long region is
-        //will also need something in here to show it's appropriately straight
-        
         for i in ystart/10..<(line.points.count/10 - 1){
             let grad = grad(a:line.points[(i)*10],b:line.points[(i+1)*10])
             
-            if (grad > -1){
-                //set ystart to point it starts heading down rapidly
+            if (grad.magnitude < 1){
+                //set yEnd to point the gradient flattens
                 
                 yEnd = i*10
                 break
             }
             
         }
-        
-        //continue along to the left, for not more than 0.5*length of vertical line
-        
         let lineLen = line.points[yEnd].y - line.points[ystart].y
         //print(lineLen)
         
-        
-        var finalSuccess = true
-        
-        
-        //make sure segment after long straight component has ended isn't too large and that it exists as strictly less in terms of x component
+        //continue along to the left, for not more than 0.5*length of vertical line and make sure segment after long straight component has ended isn't too large and that it exists as strictly less in terms of x component of the vertical section
         for i in yEnd..<(line.points.count){
+            
+            //fail if section is too long
             if ((line.points[i].x - line.points[yEnd].x).magnitude > 0.5 * lineLen || (line.points[i].y  - line.points[yEnd].y).magnitude > 0.5 * lineLen) {
                 finalSuccess = false
                 break
             }
+            //fail if x component is greter than the end of the long line i.e. if the tail crosses the vertical component
             if (line.points[i].x > line.points[yEnd].x) {
                 finalSuccess = false
                 break
             }
         }
         
+        //same treatment for the head of the integral (top right component)
         for i in 0..<ystart{
             if ((line.points[i].x - line.points[ystart].x).magnitude > 0.5 * lineLen || (line.points[i].y  - line.points[ystart].y).magnitude > 0.5 * lineLen) {
                 finalSuccess = false
@@ -227,14 +217,14 @@ class Drawing{
                 break
             }
         }
-        //print(finalSuccess)
-        //print(integralCorners(line: line))
 
-        
+        //if not failing conditions found and there are a maximum of 2 corners, success.
         if (finalSuccess && integralCorners(line:line) < 3){ return true}
         return false
     }
     
+    
+    //count number of vertica changes of direction
     func integralCorners(line: Line) -> Int{
         
         var corners = 0
@@ -242,12 +232,13 @@ class Drawing{
         let ydiff = line.points[5].y - line.points[0].y
         var ydir = ydiff / ydiff.magnitude
 
-        
+        //check points in groupings of ten for change in direction in y axis
         for i in 1..<(line.points.count/10){
             let new_ydiff = line.points[10*i].y - line.points[10*(i-1)].y
             let new_ydir = new_ydiff != 0 ? new_ydiff / new_ydiff.magnitude : ydir //use previous direction if there isn't any movement in the current set of points.
             
             
+            //dir is either -1, 0 or 1. declare a corner when -1 shifts to 1 or vice versa
             if ((new_ydir - ydir).magnitude > 1 && new_ydir != 0.0){
                 corners += 1
             }
@@ -257,10 +248,12 @@ class Drawing{
         return corners
     }
     
+    //decide if shape is a sigma
     func sigma(_ initial_line: Line) -> Bool{
         
         var line = initial_line
         
+        //prevention against index error crash
         if (line.points.count < 10) {return false}
         
         //if drawn from bottom up, reverse order of points, so can be viewed as drawn from top down
@@ -268,47 +261,76 @@ class Drawing{
             line.points.reverse()
         }
         
-        let xdiff = line.points[10].x - line.points[0].x
-        let xdir = xdiff / xdiff.magnitude
         
-        if (xdir < 0 && cornerCountSigma(line: line) == 3){ return true}
+        //initial change in x direction. Must be positive i.e. right to left
+        let xdiff = line.points[10].x - line.points[0].x
+        //let xdir = xdiff / xdiff.magnitude
+        
+        //fundamantally, this categorizes sigma as 3 changes of horizontal direction, starting from right to left movement
+        let corners = cornerCountSigma(line: line)
+        if (xdiff < 0 && corners.0 == 3 && corners.1 == true){ return true}
         
         return false
     }
     
-    func cornerCountSigma( line: Line)-> Int{
-        
-        //perhaps we take a current gradient (over say 5 points) Then skip some number, I suppose 5, then take next gradient.
-        //will have to find what the critical difference in gradient is
-        
-        //will try another approach. I think I can just go point by point and look for something crazy. When find something crazy, start new average after that point
-        
-        //in this case actually, I think I can just look for change in polarity
+    func cornerCountSigma( line: Line)-> (Int, Bool){
         
         var corners = 0
-        
-        //this isn't really a corner count anymore, but lets categorise a sigma as three sharp shanges of x direction
+        var currCornerPos = 0
+        var correctYDir = true
         
         let xdiff = line.points[5].x - line.points[0].x
         var xdir = xdiff / xdiff.magnitude
-        //var ydiff = line.points[5].y - line.points[0].y
-        //var ydir = ydiff / ydiff.magnitude
-        //use y later, for security
+
+        //count changes in direction
         for i in 1..<(line.points.count/10){
             let new_xdiff = line.points[10*i].x - line.points[10*(i-1)].x
             let new_xdir = new_xdiff != 0 ? new_xdiff / new_xdiff.magnitude : xdir //use previous direction if there isn't any movement in the current set of points.
-            //print(new_xdir)
             
             if ((new_xdir - xdir).magnitude > 1 && new_xdir != 0.0){
+                //when a new corner is found, check its y-coord is greater than the previous corner (up is down. This is checking each corner is lower on the screen than the previous one, as required for a sigma.
+                if corners > 0{
+                    if line.points[i * 10].y < line.points[currCornerPos * 10].y {
+                        correctYDir = false
+                    }
+                }
                 corners += 1
+                currCornerPos = i
             }
             xdir = new_xdir
         }
         
-        return corners
+        return (corners, correctYDir)
     }
     
+    //remove lines deemed too small to be purposeful
+    func noiseClearUp(){
+        
+        let maxLength = 400.0
+        
+        for i in 0..<lines.count{
+            let startPoint = lines[i].points[0]
+            var longEnough = false
+            for point in lines[i].points{
+                let diff = pow((point.x - startPoint.x), 2) + pow((point.y - startPoint.y), 2)
+                //if a point is more than 20 units away from the start point, the line is long enough to be considered
+                if diff > maxLength{
+                    longEnough = true
+                    break
+                }
+            }
+            //if a line is not long enough it is removed
+            if !longEnough{
+                lines.remove(at: i)
+            }
+        }
+    }
+    
+    
+    //runs character recognition on the drawing. Returns the LaTeX of the result, along with its unicode representation
     func identify() -> (String, String){
+        
+        noiseClearUp()
         
         if (lines.count == 1){
             if sigma(lines[0]){
@@ -321,7 +343,7 @@ class Drawing{
         
         if (capPi()) {return (" \\Pi ", "Π")}
         
-        print("no matches")
+        //print("no matches")
         
         return ("", "")
     }

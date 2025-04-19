@@ -90,7 +90,6 @@
 		EF2CC7AA2DA83AF4009E6DD2 = {
 			isa = PBXGroup;
 			children = (
-				EF33E82D2DB2CF7800F7C9FC /* HelpView.swift */,
 				EF2CC7B52DA83AF4009E6DD2 /* equation_notes */,
 				EF2CC7C62DA83AF8009E6DD2 /* equation_notesTests */,
 				EF2CC7D02DA83AF8009E6DD2 /* equation_notesUITests */,
@@ -113,6 +112,7 @@
 			children = (
 				EF2CC7B62DA83AF4009E6DD2 /* equation_notesApp.swift */,
 				EF2CC7B82DA83AF4009E6DD2 /* ContentView.swift */,
+				EF33E82D2DB2CF7800F7C9FC /* HelpView.swift */,
 				EF2CC7E92DA84E46009E6DD2 /* Note.swift */,
 				EF33E82B2DAB174900F7C9FC /* TextArea.swift */,
 				EF2CC7E72DA84CAA009E6DD2 /* NoteView.swift */,

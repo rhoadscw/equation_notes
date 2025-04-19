@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+//A view that instructs the user how to use the app, and describes some of its features
+
 struct HelpView: View {
     var body: some View {
         NavigationStack{
@@ -35,6 +37,10 @@ struct HelpView: View {
                         .font(.title)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     Text("Unfortunately the app is currently experiencing a bug related to the LaTeX rendering. You will find that after editing an equation and returning to the note view, your changes don't seem to have taken effect. Your changes have actually taken effect, but the rendering module simply hasn't updated. This seems to be a problem with the swift module being used. Please go back to the home screen and then return to the note for it to update.")
+                    Text("Additional notices")
+                        .font(.title)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    Text("You should additionally note that the image recognition makes some assumptions about the way you will draw the identifiable characters. Sigma and the integral symbol are required to be drawn in one motion, without lifting your finger from the screen. It is assumed that pi will be drawn as three separate strokes.")
                 }
             }
             .navigationTitle("Help")

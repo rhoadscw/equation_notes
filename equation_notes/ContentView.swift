@@ -13,6 +13,8 @@ import SwiftData
 struct ContentView: View {
     
     @Environment(\.modelContext) var modelContext
+    
+    //load notes in date created order
     @Query(sort:\Note.dateCreated, order: .reverse) var notes: [Note]
     
     var body: some View {
@@ -20,6 +22,7 @@ struct ContentView: View {
         NavigationStack{
             ZStack{
                 List{
+                    //list each note, displaying the title. Click on note to navigate to the view for that note
                     ForEach(notes){note in
                         NavigationLink(destination: NoteView(note: note)){
                             Text(note.title)
@@ -29,6 +32,7 @@ struct ContentView: View {
                 }
                 VStack{
                     Spacer()
+                    //Display help button at bottom of page. Click for instructions on usage
                     NavigationLink(destination: HelpView()){
                         Text("Help")
                     }
@@ -43,6 +47,7 @@ struct ContentView: View {
                 }
                 
                 ToolbarItem(placement: .topBarTrailing){
+                    //add a new empty note
                     Button("add", systemImage: "plus"){
                         let emptyNote = Note(title: "Title", dateCreated: Date.now)
                         modelContext.insert(emptyNote)

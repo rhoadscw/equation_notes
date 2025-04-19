@@ -29,11 +29,10 @@ struct EquationView: View {
     var body: some View {
         NavigationStack{
             List{
-                
+                //Text editor for user to edit their equation
                 TextEditor(text: $equation.body)
-                //Text(equation.body)
                 //The original plan was to have the LaTeX render in real time, below the TextEditor, but
-                //I couldn't get it to render in rea time, dispite varied approaches. Instead we have a render button
+                //I couldn't get it to render in real time, dispite varied approaches. Instead we have a render button
                 /*
                 LaTeX(equation.body)
                     .renderingStyle(.wait)
@@ -41,18 +40,18 @@ struct EquationView: View {
             }
             .toolbar{
                 Button("Render"){
+                    //render the LaTeX
                     showingRender.toggle()
                 }
                 .sheet(isPresented: $showingRender){
-                    //Text("Hello")
                     RenderedView(equation: equation.body)
                 }
                 
                 Button("Draw"){
+                    //bring up the view that allows the user to draw
                     showingDrawView.toggle()
                 }
                 .sheet(isPresented: $showingDrawView){
-                    //Text("Hello")
                     DrawView(equation: $equation.body)
                 }
             }

@@ -8,6 +8,7 @@
 import Foundation
 import SwiftData
 
+//note object. Each individual note is one of these
 @Model
 class Note: Hashable, Identifiable{
     var id: UUID
