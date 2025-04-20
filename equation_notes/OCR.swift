@@ -30,9 +30,11 @@ class Drawing{
     //decides if a line is horizontal
     func isHorizontalLine(line: Line)-> Bool{
         
+        let maxDeviation = 30.0
+        
         //using 30 as maximum amount any point can deviate from, vertically
         for point in line.points{
-            if ((point.y - line.points[0].y).magnitude > 30) {return false}
+            if ((point.y - line.points[0].y).magnitude > maxDeviation) {return false}
         }
         return true
     }
@@ -40,8 +42,10 @@ class Drawing{
     //decides if a line is vertical
     func isVerticalLine(line: Line)-> Bool{
         
+        let maxDeviation = 30.0
+        
         for point in line.points{
-            if ((point.x - line.points[0].x).magnitude > 30) {return false}
+            if ((point.x - line.points[0].x).magnitude > maxDeviation) {return false}
         }
         return true
         
@@ -74,6 +78,8 @@ class Drawing{
         //confirm remaining two lines are as expected
         for i in 0..<2{
             
+            let gapToHorizontalLine = 20.0
+            
             var maxYPoint = lines[i].points[0]
             
             //confirm line is vertical
@@ -87,7 +93,7 @@ class Drawing{
                 }
                 
                 //Make sure the top of the vertical line is near the horizontal line
-                if ((maxYPoint.y - topLine.points[topLine.points.count - 1].y).magnitude > 20) { return false}
+                if ((maxYPoint.y - topLine.points[topLine.points.count - 1].y).magnitude > gapToHorizontalLine) { return false}
                 
                 //make sure vertical bars are in the region horizontally of the top bar
                 if ( maxYPoint.x > max(topLine.points[0].x, topLine.points[topLine.points.count - 1].x)){ return false}
@@ -114,16 +120,12 @@ class Drawing{
         
         var line = initial_line
         var finalSuccess = true
+        let sampleFrequency = 10
         
-        //if less than 20 points total, we will get index errors. This shouldn't be a problem, but we include this condition
+        //if less than sampleFrequency points total, we may get index errors. This shouldn't be a problem, but we include this condition
         //to prevent crashes
         
-        if (line.points.count < 20) {return false}
-        
-        //var ydiff = line.points[10].y - line.points[0].y
-        //var ydir = ydiff / ydiff.magnitude
-        //var xdiff = line.points[line.points.count - 1].x - line.points[0].x
-        //var xdir = xdiff / xdiff.magnitude
+        if (line.points.count < sampleFrequency * 2) {return false}
         
         //assume drawn from top down
         //if integral was drawn down up, reverse its order
@@ -135,7 +137,7 @@ class Drawing{
         //ydiff refers to to the difference in x or y between one point and another later point in the points array
         //ydir captures the direction of change: -1, 1 or 0
         
-        let ydiff = line.points[10].y - line.points[0].y
+        let ydiff = line.points[sampleFrequency].y - line.points[0].y
         var ydir = ydiff / ydiff.magnitude
         //var xdiff = line.points[line.points.count - 1].x - line.points[0].x
         //var xdir = xdiff / xdiff.magnitude
@@ -149,8 +151,8 @@ class Drawing{
             
             //if y direction starts negative, find point it starts going positive
             //looking at each 10th point helps isolate real change and improve runtime.
-            for i in 1..<(line.points.count/10){
-                let new_ydiff = line.points[10*i].y - line.points[10*(i-1)].y
+            for i in 1..<(line.points.count/sampleFrequency){
+                let new_ydiff = line.points[sampleFrequency*i].y - line.points[sampleFrequency*(i-1)].y
                 let new_ydir = new_ydiff != 0 ? new_ydiff / new_ydiff.magnitude : ydir //use previous direction if there isn't any movement in the current set of points.
                 
                 //when change in vertical direction is found, set this point as ystart
@@ -164,12 +166,12 @@ class Drawing{
         }
         
         //then go along until change in direction starts to become rapid ( think gradient > 5?). Record this point
-        for i in ystart/10..<(line.points.count/10 - 1){
-            let grad = grad(a:line.points[i*10],b:line.points[(i+1)*10])
+        for i in ystart/sampleFrequency..<(line.points.count/sampleFrequency - 1){
+            let grad = grad(a:line.points[i*sampleFrequency],b:line.points[(i+1)*sampleFrequency])
             
             if (grad < -2){
                 //set ystart to point it starts heading down rapidly
-                ystart = i*10
+                ystart = i*sampleFrequency
                 
                 break
             }
@@ -177,13 +179,13 @@ class Drawing{
         yEnd = ystart //this could be temporary. Here to gurantee yEnd is initialized
         
         //measure how long the long region is
-        for i in ystart/10..<(line.points.count/10 - 1){
-            let grad = grad(a:line.points[(i)*10],b:line.points[(i+1)*10])
+        for i in ystart/sampleFrequency..<(line.points.count/sampleFrequency - 1){
+            let grad = grad(a:line.points[(i)*sampleFrequency],b:line.points[(i+1)*sampleFrequency])
             
             if (grad.magnitude < 1){
                 //set yEnd to point the gradient flattens
                 
-                yEnd = i*10
+                yEnd = i*sampleFrequency
                 break
             }
             
@@ -228,13 +230,14 @@ class Drawing{
     func integralCorners(line: Line) -> Int{
         
         var corners = 0
+        let pointFrequency = 10
         
-        let ydiff = line.points[5].y - line.points[0].y
+        let ydiff = line.points[pointFrequency].y - line.points[0].y
         var ydir = ydiff / ydiff.magnitude
 
         //check points in groupings of ten for change in direction in y axis
-        for i in 1..<(line.points.count/10){
-            let new_ydiff = line.points[10*i].y - line.points[10*(i-1)].y
+        for i in 1..<(line.points.count/pointFrequency){
+            let new_ydiff = line.points[pointFrequency*i].y - line.points[pointFrequency*(i-1)].y
             let new_ydir = new_ydiff != 0 ? new_ydiff / new_ydiff.magnitude : ydir //use previous direction if there isn't any movement in the current set of points.
             
             
@@ -252,9 +255,10 @@ class Drawing{
     func sigma(_ initial_line: Line) -> Bool{
         
         var line = initial_line
+        let pointFrequency = 10
         
         //prevention against index error crash
-        if (line.points.count < 10) {return false}
+        if (line.points.count < pointFrequency) {return false}
         
         //if drawn from bottom up, reverse order of points, so can be viewed as drawn from top down
         if(line.points[0].y > line.points[line.points.count - 1].y){
@@ -263,34 +267,34 @@ class Drawing{
         
         
         //initial change in x direction. Must be positive i.e. right to left
-        let xdiff = line.points[10].x - line.points[0].x
+        let xdiff = line.points[pointFrequency].x - line.points[0].x
         //let xdir = xdiff / xdiff.magnitude
         
         //fundamantally, this categorizes sigma as 3 changes of horizontal direction, starting from right to left movement
-        let corners = cornerCountSigma(line: line)
+        let corners = cornerCountSigma(line: line, pointFrequency: pointFrequency)
         if (xdiff < 0 && corners.0 == 3 && corners.1 == true){ return true}
         
         return false
     }
     
-    func cornerCountSigma( line: Line)-> (Int, Bool){
+    func cornerCountSigma( line: Line, pointFrequency: Int)-> (Int, Bool){
         
         var corners = 0
         var currCornerPos = 0
         var correctYDir = true
         
-        let xdiff = line.points[5].x - line.points[0].x
+        let xdiff = line.points[pointFrequency].x - line.points[0].x
         var xdir = xdiff / xdiff.magnitude
 
         //count changes in direction
-        for i in 1..<(line.points.count/10){
-            let new_xdiff = line.points[10*i].x - line.points[10*(i-1)].x
+        for i in 1..<(line.points.count/pointFrequency){
+            let new_xdiff = line.points[pointFrequency*i].x - line.points[pointFrequency*(i-1)].x
             let new_xdir = new_xdiff != 0 ? new_xdiff / new_xdiff.magnitude : xdir //use previous direction if there isn't any movement in the current set of points.
             
             if ((new_xdir - xdir).magnitude > 1 && new_xdir != 0.0){
                 //when a new corner is found, check its y-coord is greater than the previous corner (up is down. This is checking each corner is lower on the screen than the previous one, as required for a sigma.
                 if corners > 0{
-                    if line.points[i * 10].y < line.points[currCornerPos * 10].y {
+                    if line.points[i * pointFrequency].y < line.points[currCornerPos * pointFrequency].y {
                         correctYDir = false
                     }
                 }
@@ -306,7 +310,7 @@ class Drawing{
     //remove lines deemed too small to be purposeful
     func noiseClearUp(){
         
-        let maxLength = 400.0
+        let maxLengthSquared = 400.0
         
         for i in 0..<lines.count{
             let startPoint = lines[i].points[0]
@@ -314,7 +318,7 @@ class Drawing{
             for point in lines[i].points{
                 let diff = pow((point.x - startPoint.x), 2) + pow((point.y - startPoint.y), 2)
                 //if a point is more than 20 units away from the start point, the line is long enough to be considered
-                if diff > maxLength{
+                if diff > maxLengthSquared{
                     longEnough = true
                     break
                 }
