@@ -15,7 +15,7 @@ class TextArea: Identifiable, Hashable {
     
     var id = UUID()
     
-    var type: Int //0 or 1, indicating if text is an equation or not
+    var type: Int //0, 1 or 2, indicating if text is an equation, text or a picture
     var body: String
     var sortOrder: Int
     var image: Data?

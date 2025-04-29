@@ -182,6 +182,7 @@ class Drawing{
         for i in ystart/sampleFrequency..<(line.points.count/sampleFrequency - 1){
             let grad = grad(a:line.points[(i)*sampleFrequency],b:line.points[(i+1)*sampleFrequency])
             
+            print (grad)
             if (grad.magnitude < 1){
                 //set yEnd to point the gradient flattens
                 
