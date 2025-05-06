@@ -107,8 +107,3 @@ struct NoteView: View {
     }
 }
 
-/*
-#Preview {
-    NoteView()
-}
-*/

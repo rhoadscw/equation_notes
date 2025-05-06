@@ -59,12 +59,3 @@ struct EquationView: View {
     }
     
 }
-
-/*
-#Preview {
-    
-    EquationView()
-        //.modelContainer(for: TextArea.self, inMemory: true)
-    //EquationView(equation: TextArea(type: .equation, body: "$\\sin$"))
-}
-*/

@@ -136,10 +136,4 @@ struct DrawView: View {
         equation.insert(contentsOf: symbol, at: equation.index(equation.startIndex, offsetBy: insertOffset))
     }
 }
- 
-/*
-#Preview {
-    
-    DrawView()
-}
-*/
+
