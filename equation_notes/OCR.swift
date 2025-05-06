@@ -119,11 +119,75 @@ class Drawing{
         
     }
     
+    //samples points on a line, starting from a specified point, and return point where gradient becomes steeper
+    func continueUntilGradSteepens(yStart: Int, sampleFrequency: Int, line: Line, minGrad: Double)-> Int{
+        for i in yStart/sampleFrequency..<(line.points.count/sampleFrequency - 1){
+            let grad = grad(a:line.points[i*sampleFrequency],b:line.points[(i+1)*sampleFrequency])
+            
+            if (grad < minGrad){
+                //return point it starts heading down rapidly
+                return i*sampleFrequency
+            }
+        }
+        return yStart
+    }
+    
+    //samples points on a line, starting from a specified point, and return point where gradient becomes shallower
+    func continueUntilGradShallows(yStart: Int, sampleFrequency: Int, line: Line, minGrad: Double)-> Int{
+        for i in yStart/sampleFrequency..<(line.points.count/sampleFrequency - 1){
+            let grad = grad(a:line.points[i*sampleFrequency],b:line.points[(i+1)*sampleFrequency])
+            
+            if (grad.magnitude < minGrad){
+                //return point it stops heading down rapidly
+                return i*sampleFrequency
+            }
+        }
+        return yStart
+    }
+    
+    func verifyTailComponent(line: Line, yEnd: Int, allowableLength: Double, lineLen: Double)-> Bool{
+        //continue along to the left, for not more than allowableLength*length of vertical line and make sure segment after long straight component has ended isn't too large and that it exists as strictly less in terms of x component of the vertical section
+        
+        for i in yEnd..<(line.points.count){
+            
+            //fail if section is too long
+            if verifyDistanceBetweenPoints(a: line.points[i], b: line.points[yEnd], allowableDistance: allowableLength * lineLen){
+                return false
+            }
+            //fail if x component is greter than the end of the long line i.e. if the tail crosses the vertical component
+            if (line.points[i].x > line.points[yEnd].x) {
+                return false
+            }
+        }
+        return true
+    }
+    
+    func verifyHeadComponent(line: Line, yStart: Int, allowableLength: Double, lineLen: Double)-> Bool{
+        //similar treatment for the head of the integral (top right component) compared with the tail
+        for i in 0..<yStart{
+            
+            if verifyDistanceBetweenPoints(a: line.points[i], b: line.points[yStart], allowableDistance: allowableLength * lineLen){
+                return false
+            }
+            if (line.points[i].x < line.points[yStart].x) {
+                return false
+                
+            }
+        }
+        return true
+    }
+    
+    //verify distance between two points is below a maximum given amount
+    func verifyDistanceBetweenPoints(a: CGPoint, b: CGPoint, allowableDistance: Double)-> Bool{
+        return ((a.x - b.x).magnitude > allowableDistance || (a.y  - b.y).magnitude > allowableDistance)
+    }
+    
+    
     //determines if the shape is an integration symbol
     func integral( _ initial_line: Line)-> Bool{
         
         var line = initial_line
-        var finalSuccess = true
+        //var finalSuccess = true
         let sampleFrequency = 2
         
         //if less than sampleFrequency points total, we may get index errors. This shouldn't be a problem, but we include this condition
@@ -165,66 +229,20 @@ class Drawing{
                 ydir = new_ydir
             }
         }
-        
-        //then go along until change in direction starts to become rapid. Record this point
-        for i in yStart/sampleFrequency..<(line.points.count/sampleFrequency - 1){
-            let grad = grad(a:line.points[i*sampleFrequency],b:line.points[(i+1)*sampleFrequency])
-            
-            if (grad < -1){
-                //set yStart to point it starts heading down rapidly
-                yStart = i*sampleFrequency
-                
-                break
-            }
-        }
-        yEnd = yStart //this could be temporary. Here to gurantee yEnd is initialized
-        
-        //measure how long the long region is
-        for i in yStart/sampleFrequency..<(line.points.count/sampleFrequency - 1){
-            let grad = grad(a:line.points[(i)*sampleFrequency],b:line.points[(i+1)*sampleFrequency])
-            
-            //print (grad)
-            if (grad.magnitude < 1){
-                //set yEnd to point the gradient flattens
-                
-                yEnd = i*sampleFrequency
-                break
-            }
-            
-        }
+        //calculate length of vertical component
+        yStart = continueUntilGradSteepens(yStart: yStart, sampleFrequency: sampleFrequency, line: line, minGrad: -1)
+        yEnd = continueUntilGradShallows(yStart: yStart, sampleFrequency: sampleFrequency, line: line, minGrad: 1)
         let lineLen = line.points[yEnd].y - line.points[yStart].y
-        let allowableLength = 0.6 //allocable length of head/tail is 0.6* length of vertical component
+        let allowableLength = 0.6 //allowable length of head/tail is 0.6* length of vertical component
         
-        //continue along to the left, for not more than 0.5*length of vertical line and make sure segment after long straight component has ended isn't too large and that it exists as strictly less in terms of x component of the vertical section
-        
-        for i in yEnd..<(line.points.count){
-            
-            //fail if section is too long
-            if ((line.points[i].x - line.points[yEnd].x).magnitude > allowableLength * lineLen || (line.points[i].y  - line.points[yEnd].y).magnitude > allowableLength * lineLen) {
-                finalSuccess = false
-                break
-            }
-            //fail if x component is greter than the end of the long line i.e. if the tail crosses the vertical component
-            if (line.points[i].x > line.points[yEnd].x) {
-                finalSuccess = false
-                break
-            }
-        }
-        
-        //same treatment for the head of the integral (top right component)
-        for i in 0..<yStart{
-            if ((line.points[i].x - line.points[yStart].x).magnitude > allowableLength * lineLen || (line.points[i].y  - line.points[yStart].y).magnitude > allowableLength * lineLen) {
-                finalSuccess = false
-                break
-            }
-            if (line.points[i].x < line.points[yStart].x) {
-                finalSuccess = false
-                break
-            }
+        //verify head and tail components are of an allowable description
+        let TailSuccess = verifyTailComponent(line: line, yEnd: yEnd, allowableLength: allowableLength, lineLen: lineLen)
+        if TailSuccess{
+            let HeadSuccess = verifyHeadComponent(line: line, yStart: yStart, allowableLength: allowableLength, lineLen: lineLen)
+            //if not failing conditions found and there are a maximum of 2 corners, success.
+            if (HeadSuccess && integralCorners(line:line) < 3){ return true}
         }
 
-        //if not failing conditions found and there are a maximum of 2 corners, success.
-        if (finalSuccess && integralCorners(line:line) < 3){ return true}
         return false
     }
     
